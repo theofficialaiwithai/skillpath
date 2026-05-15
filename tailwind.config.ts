@@ -44,6 +44,14 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    "bg-blue-100", "bg-green-100", "bg-orange-100", "bg-purple-100",
+    "bg-cyan-100", "bg-pink-100", "bg-yellow-100", "bg-red-100",
+    "bg-emerald-100", "bg-violet-100",
+    "border-blue-400", "border-green-400", "border-orange-400", "border-purple-400",
+    "border-cyan-400", "border-pink-400", "border-yellow-400", "border-red-400",
+    "border-emerald-400", "border-violet-400",
+  ],
   plugins: [],
 };
 export default config;
