@@ -7,10 +7,28 @@ export default function Navbar() {
   const { isSignedIn } = useAuth();
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 bg-white">
+    <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
       <Link href="/" className="font-heading text-xl font-bold text-brand">
         SkillPath
       </Link>
+
+      <div className="flex items-center gap-6">
+        <Link
+          href="/pricing"
+          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200"
+        >
+          Pricing
+        </Link>
+        {isSignedIn && (
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200"
+          >
+            Dashboard
+          </Link>
+        )}
+      </div>
+
       <div className="flex items-center gap-3">
         {isSignedIn ? (
           <UserButton />
