@@ -37,10 +37,16 @@ const config: Config = {
         bg: {
           warm: "#F9F8F4",
         },
+        cream: "#FFFDF7",
+        blush: "#FFF3E0",
+        lavender: "#F3F0FF",
+        navy: "#1A1A1A",
+        "bumble-yellow": "#FFC629",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "sans-serif"],
         sans: ["var(--font-sans)", "sans-serif"],
+        fraunces: ["var(--font-fraunces)", "serif"],
       },
     },
   },

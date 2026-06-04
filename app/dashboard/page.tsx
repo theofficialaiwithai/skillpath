@@ -9,9 +9,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { db } from "@/lib/db";
-import { skills, learningPaths, pathSteps, resources, userPaths, userProgress } from "@/db/schema";
+import { skills, learningPaths, pathSteps, resources, userPaths, userProgress, userProfiles } from "@/db/schema";
 import FadeIn from "@/components/motion/FadeIn";
 import StaggerList from "@/components/motion/StaggerList";
+import GuestPathClaim from "@/components/GuestPathClaim";
+import PathLimitIndicator from "@/components/PathLimitIndicator";
+import StartPathButton from "@/components/StartPathButton";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -114,22 +117,34 @@ export default async function DashboardPage() {
 
   const allSkills = activePaths.length === 0 ? await db.select().from(skills) : [];
 
+  // 6. Subscription status for path-limit indicator
+  const [profileRow] = await db
+    .select({ subscriptionStatus: userProfiles.subscriptionStatus })
+    .from(userProfiles)
+    .where(eq(userProfiles.clerkUserId, userId))
+    .limit(1);
+  const subscribed = profileRow?.subscriptionStatus === "active";
+  const activePathCount = activePaths.length;
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-bg-warm">
+    <div className="min-h-[calc(100vh-65px)] bg-[#FFFDF7]">
+      {/* Silently claims a guest path if skillpath_guest cookie is present */}
+      <GuestPathClaim />
+
       <div className="max-w-5xl mx-auto px-6 py-12">
 
         {/* Header */}
         <FadeIn y={16} duration={0.5}>
           <div className="flex items-start justify-between mb-10">
             <div>
-              <h1 className="font-heading text-4xl font-extrabold text-zinc-900 mb-1">Welcome back!</h1>
-              <p className="text-zinc-500">Keep going. Every step compounds.</p>
+              <h1 className="font-fraunces text-4xl font-bold text-[#1A1A1A] mb-1">Welcome back!</h1>
+              <p className="text-gray-500">Keep going. Every step compounds.</p>
+              {/* Path-limit indicator — hidden for subscribed users and users with 0 paths */}
+              <PathLimitIndicator activeCount={activePathCount} isSubscribed={subscribed} />
             </div>
-            <Link href="/onboarding" className="bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl px-5 py-3 text-sm transition-all duration-200 whitespace-nowrap">
-              + Start a new path
-            </Link>
+            <StartPathButton />
           </div>
         </FadeIn>
 
@@ -140,9 +155,9 @@ export default async function DashboardPage() {
             { label: "Steps completed", value: totalStepsCompleted },
             { label: "Hours invested",  value: totalHoursInvested },
           ].map(({ label, value }) => (
-            <div key={label} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all duration-200">
-              <p className="text-3xl font-heading font-extrabold text-zinc-900">{value}</p>
-              <p className="text-sm text-zinc-500 mt-1">{label}</p>
+            <div key={label} className="bg-white rounded-3xl border border-[#F0EBE3] shadow-sm p-5 hover:shadow-md transition-all duration-200">
+              <p className="text-3xl font-fraunces font-bold text-[#1A1A1A]">{value}</p>
+              <p className="text-sm text-gray-500 mt-1">{label}</p>
             </div>
           ))}
         </StaggerList>
@@ -150,23 +165,18 @@ export default async function DashboardPage() {
         {/* Active paths */}
         <FadeIn y={8} delay={0.2}>
           <section className="mb-12">
-            <h2 className="font-heading font-bold text-xl text-zinc-900 mb-4">Your active paths</h2>
+            <h2 className="font-fraunces font-bold text-xl text-[#1A1A1A] mb-4">Your active paths</h2>
 
             {activePaths.length === 0 ? (
               <div className="text-center py-16 px-6">
                 <div className="text-6xl mb-4">🗺️</div>
-                <h3 className="font-heading font-bold text-2xl text-zinc-900 mb-2">
+                <h3 className="font-fraunces font-bold text-2xl text-[#1A1A1A] mb-2">
                   Your learning journey starts here
                 </h3>
-                <p className="text-zinc-500 mb-6">
+                <p className="text-gray-500 mb-6">
                   Pick a skill from the homepage to build your first path
                 </p>
-                <Link
-                  href="/"
-                  className="inline-block bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl px-6 py-3 transition-all duration-200"
-                >
-                  Explore skills →
-                </Link>
+                <StartPathButton />
 
                 {/* Skill grid below */}
                 {allSkills.length > 0 && (
@@ -203,7 +213,7 @@ export default async function DashboardPage() {
                   return (
                     <div
                       key={p.userPathId}
-                      className={`bg-white rounded-2xl shadow-sm border-l-4 ${borderClass} px-6 py-5 hover:shadow-md transition-all duration-200`}
+                      className={`bg-white rounded-3xl border border-[#F0EBE3] shadow-sm border-l-4 ${borderClass} px-6 py-5 hover:-translate-y-1 hover:shadow-md transition-all duration-200`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2 text-sm text-zinc-500">
@@ -214,7 +224,7 @@ export default async function DashboardPage() {
                         </span>
                       </div>
 
-                      <h3 className="font-heading font-bold text-lg text-zinc-900 mb-4">{p.pathTitle}</h3>
+                      <h3 className="font-fraunces font-bold text-lg text-[#1A1A1A] mb-4">{p.pathTitle}</h3>
 
                       <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden mb-1">
                         <div className="h-full bg-brand rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
@@ -242,7 +252,7 @@ export default async function DashboardPage() {
         {completedPaths.length > 0 && (
           <FadeIn y={8} delay={0.3}>
             <section>
-              <h2 className="font-heading font-bold text-xl text-zinc-900 mb-4">Completed</h2>
+              <h2 className="font-fraunces font-bold text-xl text-[#1A1A1A] mb-4">Completed</h2>
               <div className="space-y-4">
                 {completedPaths.map((p) => {
                   const borderClass = CARD_TO_BORDER[p.skillCardColor] ?? "border-brand";
@@ -250,7 +260,7 @@ export default async function DashboardPage() {
                   const Icon        = ICON_MAP[p.skillIcon] ?? Code2;
 
                   return (
-                    <div key={p.userPathId} className={`bg-white rounded-2xl shadow-sm border-l-4 ${borderClass} overflow-hidden hover:shadow-md transition-all duration-200`}>
+                    <div key={p.userPathId} className={`bg-white rounded-3xl border border-[#F0EBE3] shadow-sm border-l-4 ${borderClass} overflow-hidden hover:-translate-y-1 hover:shadow-md transition-all duration-200`}>
                       <div className="flex items-center gap-2 px-6 py-2 bg-green-50 border-b border-green-200 text-green-700 text-sm font-medium">
                         <CheckCircle2 className="w-4 h-4" />
                         Completed {formatDate(p.completedAt)}
@@ -264,7 +274,7 @@ export default async function DashboardPage() {
                             {levelConf.label}
                           </span>
                         </div>
-                        <h3 className="font-heading font-bold text-lg text-zinc-900 mb-4">{p.pathTitle}</h3>
+                        <h3 className="font-fraunces font-bold text-lg text-[#1A1A1A] mb-4">{p.pathTitle}</h3>
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-zinc-400">Started {formatDate(p.startedAt)}</span>
                           <Link href={`/path/${p.pathId}`} className="border-2 border-zinc-200 hover:border-brand hover:text-brand text-zinc-600 font-semibold text-sm rounded-lg px-4 py-2 transition-all duration-200">

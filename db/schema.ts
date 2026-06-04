@@ -50,6 +50,10 @@ export const resources = pgTable("resources", {
   estimatedHours: integer("estimated_hours").notNull(),
   whyItsHere: text("why_its_here").notNull(),
   qualityScore: integer("quality_score").default(80),
+  // Personalization fields
+  type: text("type"),            // 'video' | 'article' | 'course' | 'podcast' | 'docs' | 'project'
+  isProjectBased: boolean("is_project_based").default(false),
+  rating: integer("rating"),    // 1–5 explicit rating (falls back to qualityScore/20 if null)
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -80,7 +84,15 @@ export const userProfiles = pgTable("user_profiles", {
   displayName: text("display_name"),
   subscribed: boolean("subscribed").default(false),
   subscriptionId: text("subscription_id"),
+  subscriptionStatus: text("subscription_status").default("free"), // 'free' | 'active' | 'canceled' | 'past_due'
   freeUntil: timestamp("free_until"),
+  // Personalization preferences
+  budget: text("budget"),                        // 'free' | 'under_50' | '50_200' | 'no_limit'
+  learningStyles: text("learning_styles").array(), // ['visual','auditory','experiential','symbolic','reflective','social']
+  resourceTypes: text("resource_types").array(), // preferred resource types e.g. ['video','article']
+  timeline: text("timeline"),                    // 'asap' | '1_3_months' | '3_6_months' | 'no_deadline'
+  completedPathsCount: integer("completed_paths_count").default(0),
+  autoCompleteEnabled: boolean("auto_complete_enabled").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -93,6 +105,7 @@ export const userPaths = pgTable(
       .notNull()
       .references(() => learningPaths.id),
     hoursPerWeek: integer("hours_per_week").notNull(),
+    isCompleted: boolean("is_completed").default(false),
     startedAt: timestamp("started_at").defaultNow(),
     completedAt: timestamp("completed_at"),
   },
@@ -111,6 +124,7 @@ export const userProgress = pgTable(
       .notNull()
       .references(() => pathSteps.id),
     completedAt: timestamp("completed_at").defaultNow(),
+    lastOpenedAt: timestamp("last_opened_at", { withTimezone: true }),
   },
   (t) => [unique().on(t.clerkUserId, t.pathStepId)]
 );
@@ -129,3 +143,36 @@ export const resourceRatings = pgTable(
   },
   (t) => [unique().on(t.clerkUserId, t.resourceId)]
 );
+
+// Guest / unauthenticated session — stores onboarding answers before sign-up
+export const guestSessions = pgTable("guest_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionToken: text("session_token").unique().notNull(),
+  skillId: uuid("skill_id").references(() => skills.id),
+  pathId: uuid("path_id").references(() => learningPaths.id),
+  level: text("level"),
+  hoursPerWeek: integer("hours_per_week"),
+  budget: text("budget"),
+  learningStyles: text("learning_styles").array(),
+  resourceTypes: text("resource_types").array(),
+  timeline: text("timeline"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true })
+    .default(sql`now() + interval '7 days'`),
+});
+
+// Event cache — stores scraped community events for 24 hours
+export const cachedEvents = pgTable("cached_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  skillKeyword: text("skill_keyword").notNull(),
+  source: text("source").notNull(), // 'luma' | 'eventbrite' | 'meetup' | 'partiful'
+  eventTitle: text("event_title").notNull(),
+  eventUrl: text("event_url").notNull(),
+  eventDate: timestamp("event_date", { withTimezone: true }),
+  eventLocation: text("event_location"),
+  coverImageUrl: text("cover_image_url"),
+  organizerName: text("organizer_name"),
+  cachedAt: timestamp("cached_at", { withTimezone: true }).defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true })
+    .default(sql`now() + interval '24 hours'`),
+});

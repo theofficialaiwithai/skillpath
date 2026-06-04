@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { skills, learningPaths, userPaths } from "@/db/schema";
+import { FREE_PATH_LIMIT, getUserPathCount, isSubscribed } from "@/lib/subscription";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -30,10 +31,22 @@ export async function POST(req: Request) {
     );
   }
 
-  // If authenticated, enroll the user
+  // If authenticated, enforce limit then enroll
   const { userId } = await auth();
 
   if (userId) {
+    const [activeCount, subscribed] = await Promise.all([
+      getUserPathCount(userId),
+      isSubscribed(userId),
+    ]);
+
+    if (!subscribed && activeCount >= FREE_PATH_LIMIT) {
+      return NextResponse.json(
+        { success: false, reason: "path_limit" },
+        { status: 403 }
+      );
+    }
+
     await db
       .insert(userPaths)
       .values({

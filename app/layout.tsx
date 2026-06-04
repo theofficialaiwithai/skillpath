@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/navbar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-heading" });
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  style: ["normal", "italic"],
+  weight: ["400", "700", "900"],
+});
 
 export const metadata: Metadata = {
   title: { default: "SkillPath", template: "%s | SkillPath" },
@@ -24,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
+      <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable} ${fraunces.variable}`}>
         <body className="font-sans antialiased bg-bg-warm">
           <Navbar />
           {children}

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import {
   Share2, Loader2, Clock, CheckCircle2, ExternalLink, Star,
 } from "lucide-react";
+import UpgradeModal from "@/components/UpgradeModal";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -223,6 +224,7 @@ export default function PathActions({
   const [celebrating, setCelebrating]     = useState(false);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [ratingMap, setRatingMap]         = useState<Map<string, RatingEntry>>(new Map());
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
   useEffect(() => {
     if (celebrating) {
@@ -236,9 +238,22 @@ export default function PathActions({
   async function handleStart() {
     setStarting(true);
     try {
-      await fetch("/api/paths/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pathId }) });
+      const res = await fetch("/api/paths/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pathId }),
+      });
+      const data = await res.json() as { success?: boolean; reason?: string };
+
+      if (res.status === 403 && data.reason === "path_limit") {
+        setUpgradeModalOpen(true);
+        return;
+      }
+
       router.refresh();
-    } finally { setStarting(false); }
+    } finally {
+      setStarting(false);
+    }
   }
 
   async function handleShare() {
@@ -252,11 +267,15 @@ export default function PathActions({
     setLoadingStep(stepId);
     try {
       const res  = await fetch("/api/progress/complete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pathStepId: stepId, userPathId }) });
-      const data = await res.json();
+      const data = await res.json() as { success?: boolean; pathCompleted?: boolean; pathId?: string };
       if (res.ok) {
         setCompletedIds((prev) => new Set([...prev, stepId]));
         setRatingMap((prev) => { const n = new Map(prev); n.set(stepId, { showing: true, rating: 0, note: "", submitted: false, loading: false }); return n; });
-        if (data.pathComplete) setCelebrating(true);
+        if (data.pathCompleted) {
+          // Navigate to the celebration page — confetti fires there
+          router.push(`/path/${pathId}/complete`);
+          return;
+        }
       }
     } finally { setLoadingStep(null); }
   }
@@ -289,6 +308,8 @@ export default function PathActions({
 
   return (
     <>
+      <UpgradeModal isOpen={upgradeModalOpen} onClose={() => setUpgradeModalOpen(false)} />
+
       {/* Celebration banner */}
       {celebrating && (
         <div className={`mx-auto max-w-4xl px-6 pt-6 transition-all duration-500 ${bannerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>

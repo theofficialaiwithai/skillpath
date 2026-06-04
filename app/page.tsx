@@ -1,107 +1,197 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Code2, Table2, Database, Globe, BarChart2, PenTool,
-  Pencil, Video, DollarSign, Cpu,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { skills as skillsTable } from "@/db/schema";
-import FadeIn from "@/components/motion/FadeIn";
-import StaggerList from "@/components/motion/StaggerList";
+import HomepageSkillGrid from "@/components/HomepageSkillGrid";
 
 export const metadata: Metadata = {
   title: "Find Your Path",
   description:
-    "Enter a skill, your level, and hours per week. Get a sequenced path from the internet's best resources — YouTube, Udemy, and free sites.",
+    "Describe what you want to learn. We'll build the path — online resources, hands-on tutorials, and IRL events near you.",
 };
 
-const ICON_MAP: Record<string, LucideIcon> = {
-  "code-2": Code2, "table-2": Table2, "database": Database,
-  "globe": Globe, "bar-chart-2": BarChart2, "pen-tool": PenTool,
-  "pencil": Pencil, "video": Video, "dollar-sign": DollarSign, "cpu": Cpu,
-};
+const MARQUEE_SKILLS = [
+  "Python for Data Science", "UX Design", "AI Prompting", "SQL",
+  "Product Management", "Figma", "Machine Learning", "Copywriting",
+  "No-Code Development", "Public Speaking", "Data Analysis", "Web Development",
+];
 
 export default async function Home() {
   const skills = await db.select().from(skillsTable);
 
   return (
-    <div>
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-br from-orange-50 via-white to-purple-50 flex flex-col items-center justify-center px-6 py-28 text-center">
-        <FadeIn delay={0} duration={0.6} y={20}>
-          <h1 className="font-heading text-6xl lg:text-7xl font-extrabold text-zinc-900 leading-tight mb-6">
-            Stop picking courses.
-            <br />
-            <span className="text-brand">Start finishing them.</span>
-          </h1>
-        </FadeIn>
+    <div className="bg-[#FFFDF7]">
 
-        <FadeIn delay={0.1} duration={0.6} y={20}>
-          <p className="text-lg text-zinc-500 max-w-xl leading-relaxed mb-10">
-            Enter a skill, your level, and the hours you have. Get a sequenced
-            path from the internet&apos;s best resources — across YouTube, Udemy,
-            and free sites.
-          </p>
-        </FadeIn>
+      {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
+      <section className="bg-gradient-to-br from-[#FFF3E0] via-[#FFFDF7] to-[#F3F0FF] px-6 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
-        <FadeIn delay={0.2} duration={0.6} y={20}>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/onboarding"
-              className="bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl px-8 py-4 text-lg transition-all duration-200"
-            >
-              Get my free path
-            </Link>
-            <a
-              href="#how-it-works"
-              className="border-2 border-brand text-brand font-semibold rounded-xl px-8 py-4 text-lg hover:bg-brand/5 transition-all duration-200"
-            >
-              See how it works
-            </a>
-          </div>
-        </FadeIn>
-      </section>
+          {/* Left — text */}
+          <div className="flex flex-col gap-7">
+            {/* Badge */}
+            <span className="self-start bg-[#FFC629] text-[#1A1A1A] rounded-full px-4 py-1 text-sm font-medium">
+              ✨ Social learning, reimagined
+            </span>
 
-      {/* ── SKILLS GRID ───────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 px-6 bg-white">
-        <FadeIn delay={0} y={12}>
-          <h2 className="font-heading text-4xl font-bold text-zinc-900 text-center mb-12">
-            10 skills. Every level. One path.
-          </h2>
-        </FadeIn>
+            {/* Heading */}
+            <h1 className="font-fraunces text-5xl md:text-7xl font-bold text-[#1A1A1A] leading-tight">
+              Stop picking courses.<br />
+              <span className="italic text-[#FF4D2E]">Start finishing them.</span>
+            </h1>
 
-        <StaggerList
-          className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
-          itemDelay={0.05}
-          y={12}
-        >
-          {skills.map((skill) => {
-            const Icon = ICON_MAP[skill.icon] ?? Code2;
-            return (
+            {/* Subheading */}
+            <p className="text-lg text-gray-600 max-w-md leading-relaxed">
+              Describe what you want to learn. We&apos;ll build the path — online
+              resources, hands-on tutorials, and IRL events near you.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap gap-4">
               <Link
-                key={skill.id}
-                href={`/onboarding?skill=${skill.slug}`}
-                className={`${skill.cardColor} rounded-2xl p-6 flex flex-col gap-3 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer`}
+                href="/explore"
+                className="bg-[#FF4D2E] text-white rounded-full px-8 py-4 text-lg font-semibold hover:bg-orange-600 transition-colors"
               >
-                <Icon className="w-7 h-7 text-zinc-700" />
-                <div>
-                  <p className="font-heading font-bold text-zinc-900 text-sm leading-snug">
-                    {skill.name}
-                  </p>
-                  <p className="text-xs text-zinc-500 mt-0.5">3 levels</p>
-                </div>
+                Find my path →
               </Link>
-            );
-          })}
-        </StaggerList>
+              <a
+                href="#how-it-works"
+                className="border-2 border-[#1A1A1A] text-[#1A1A1A] rounded-full px-8 py-4 text-lg font-semibold hover:bg-[#1A1A1A] hover:text-white transition-all duration-200"
+              >
+                See how it works
+              </a>
+            </div>
 
-        <FadeIn delay={0.6} y={0}>
-          <p className="text-center text-sm text-zinc-400 mt-14">
-            Free for 90 days · No credit card required · Built for self-directed learners
-          </p>
-        </FadeIn>
+            {/* Social proof */}
+            <p className="text-sm text-gray-500">
+              Join 2,400+ learners building skills that matter
+            </p>
+          </div>
+
+          {/* Right — photo (hidden on mobile) */}
+          <div className="hidden md:block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop"
+              alt="People studying together"
+              className="rounded-3xl object-cover w-full h-[500px] shadow-xl"
+            />
+          </div>
+        </div>
       </section>
+
+      {/* ── SECTION 2: MARQUEE ───────────────────────────────────────────────── */}
+      <div className="bg-white border-y border-[#F0EBE3] py-5 overflow-hidden">
+        <div className="flex animate-marquee whitespace-nowrap gap-12">
+          {[...MARQUEE_SKILLS, ...MARQUEE_SKILLS].map((skill, i) => (
+            <span
+              key={`${skill}-${i}`}
+              className="text-sm font-medium text-gray-500 flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D2E] inline-block" />
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── SECTION 3: HOW IT WORKS ──────────────────────────────────────────── */}
+      <section id="how-it-works" className="bg-[#FFF3E0] px-6 py-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="font-fraunces text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-4">
+              Learning that <span className="italic">actually works</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-xl mx-auto">
+              No more tab switching. No more decision fatigue. Just your path.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card 01 */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="w-10 h-10 bg-[#FF4D2E] text-white rounded-full flex items-center justify-center font-bold text-sm mb-6">
+                01
+              </div>
+              <h3 className="font-semibold text-xl text-[#1A1A1A] mb-3">Tell us your goal</h3>
+              <p className="text-gray-500 leading-relaxed">
+                Describe what you want to learn in plain English. No dropdowns, no checkboxes.
+              </p>
+            </div>
+
+            {/* Card 02 */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="w-10 h-10 bg-[#FFC629] text-[#1A1A1A] rounded-full flex items-center justify-center font-bold text-sm mb-6">
+                02
+              </div>
+              <h3 className="font-semibold text-xl text-[#1A1A1A] mb-3">Get your curated path</h3>
+              <p className="text-gray-500 leading-relaxed">
+                Resources from YouTube, Udemy, books, and IRL events — sequenced so you don&apos;t have to think.
+              </p>
+            </div>
+
+            {/* Card 03 */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="w-10 h-10 bg-[#7C3AED] text-white rounded-full flex items-center justify-center font-bold text-sm mb-6">
+                03
+              </div>
+              <h3 className="font-semibold text-xl text-[#1A1A1A] mb-3">Learn with your people</h3>
+              <p className="text-gray-500 leading-relaxed">
+                Track progress, embed resources, and find workshops and events happening near you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 4: SKILLS GRID ───────────────────────────────────────────── */}
+      <section className="px-6 py-24 bg-[#FFFDF7]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-fraunces text-4xl md:text-5xl font-bold text-[#1A1A1A] text-center mb-14">
+            10 skills. Every level.{" "}
+            <span className="italic text-[#FF4D2E]">One path.</span>
+          </h2>
+
+          <HomepageSkillGrid skills={skills} />
+
+          <p className="text-center text-sm text-gray-400 mt-14">
+            Free to try · No credit card required · Built for self-directed learners
+          </p>
+        </div>
+      </section>
+
+      {/* ── SECTION 5: COMMUNITY CTA ─────────────────────────────────────────── */}
+      <section className="px-6 pb-24 bg-[#FFFDF7]">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Left — dark card */}
+          <div className="bg-[#1A1A1A] text-white rounded-3xl p-12 flex flex-col justify-between gap-8">
+            <div>
+              <h2 className="font-fraunces text-4xl font-bold leading-tight mb-4">
+                Learning is better{" "}
+                <span className="italic text-[#FFC629]">together</span>
+              </h2>
+              <p className="text-gray-400 text-lg leading-relaxed">
+                Every path includes online resources AND in-person events near you. Find your people.
+              </p>
+            </div>
+            <Link
+              href="/explore"
+              className="self-start bg-[#FF4D2E] text-white rounded-full px-8 py-4 font-semibold hover:bg-orange-600 transition-colors"
+            >
+              Find my people →
+            </Link>
+          </div>
+
+          {/* Right — photo */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1758270705518-b61b40527e76?w=800&auto=format&fit=crop"
+            alt="Group of friends laughing together"
+            className="rounded-3xl object-cover w-full min-h-[300px] h-full shadow-sm"
+          />
+        </div>
+      </section>
+
     </div>
   );
 }
