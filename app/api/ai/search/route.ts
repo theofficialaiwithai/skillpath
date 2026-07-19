@@ -11,7 +11,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json() as { query?: string };
     query = body.query ?? "";
-    console.log("[ai/search] stage 1 — query:", query);
   } catch (err) {
     console.error("[ai/search] body parse error:", err);
     return NextResponse.json({ error: "Invalid request body", detail: String(err) }, { status: 400 });
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
     console.error("[ai/search] ANTHROPIC_API_KEY is missing or is still a placeholder");
     return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured", detail: "Key is missing or placeholder" }, { status: 500 });
   }
-  console.log("[ai/search] stage 2 — API key present, starts with:", apiKey.slice(0, 12) + "…");
+
 
   // ── Stage 3: DB fetch ─────────────────────────────────────────────────────
   let catalog: object[];
@@ -36,8 +35,6 @@ export async function POST(req: Request) {
       db.select().from(skills),
       db.select().from(learningPaths),
     ]);
-    console.log("[ai/search] stage 3 — skills:", allSkills.length, "paths:", allPaths.length);
-
     catalog = allSkills.map((skill) => ({
       slug: skill.slug,
       name: skill.name,
@@ -90,7 +87,6 @@ Return exactly this JSON shape:
     const block = message.content[0];
     if (block.type !== "text") throw new Error(`Unexpected content type: ${block.type}`);
     rawText = block.text;
-    console.log("[ai/search] stage 4 — Claude raw response:", rawText);
   } catch (err) {
     console.error("[ai/search] Anthropic API error:", err);
     return NextResponse.json({ error: "Claude API call failed", detail: String(err) }, { status: 500 });
@@ -104,7 +100,6 @@ Return exactly this JSON shape:
     if (fenced) jsonText = fenced[1].trim();
 
     const result = JSON.parse(jsonText);
-    console.log("[ai/search] stage 5 — parsed result:", result);
     return NextResponse.json(result);
   } catch (err) {
     console.error("[ai/search] JSON parse error. Raw text was:", rawText);

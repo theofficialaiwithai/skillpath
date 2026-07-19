@@ -14,16 +14,24 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: { default: "SkillPath", template: "%s | SkillPath" },
+  title: { default: "SkillPath — Find Your Learning Path", template: "%s | SkillPath" },
   description:
-    "Build a structured learning path through the best resources on YouTube, Udemy, Coursera, and more. Stop browsing — start learning.",
+    "Curated, personalized learning paths across YouTube, Coursera, books, and live events. Built for ambitious self-learners.",
   keywords: ["learning path", "online courses", "skill building", "curated learning"],
   openGraph: {
-    title: "SkillPath",
-    description: "Stop browsing. Start learning.",
-    url: "https://skillpath.vercel.app",
+    title: "SkillPath — Find Your Learning Path",
+    description: "Curated, personalized learning paths across YouTube, Coursera, books, and live events. Built for ambitious self-learners.",
+    url: "https://skillpath-hazel.vercel.app",
     siteName: "SkillPath",
     type: "website",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&auto=format&fit=crop",
+        width: 1200,
+        height: 630,
+        alt: "People learning together",
+      },
+    ],
   },
 };
 

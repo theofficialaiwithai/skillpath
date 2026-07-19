@@ -56,11 +56,11 @@ export default function EventsSection({ skillSlug }: EventsSectionProps) {
       {loading ? (
         /* Skeleton */
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-[#F0EBE3] p-5 animate-pulse">
-              <div className="h-4 bg-gray-100 rounded w-3/4 mb-3" />
-              <div className="h-3 bg-gray-100 rounded w-1/2 mb-2" />
-              <div className="h-3 bg-gray-100 rounded w-1/3" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-[#FFF3E0] rounded-2xl border border-[#F0EBE3] p-5 animate-pulse h-32">
+              <div className="h-4 bg-[#FFD5C2] rounded w-3/4 mb-3" />
+              <div className="h-3 bg-[#FFD5C2] rounded w-1/2 mb-2" />
+              <div className="h-3 bg-[#FFD5C2] rounded w-1/3" />
             </div>
           ))}
         </div>

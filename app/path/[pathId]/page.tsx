@@ -6,6 +6,7 @@ import { learningPaths, skills, pathSteps, resources, userPaths, userProgress, u
 import PathActions from "./PathActions";
 import type { TimelineSegment } from "./PathActions";
 import EventsSection from "@/components/EventsSection";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -205,7 +206,9 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
 
       {/* ── EVENTS ──────────────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-6">
-        <EventsSection skillSlug={pathRow.skillSlug} />
+        <ErrorBoundary>
+          <EventsSection skillSlug={pathRow.skillSlug} />
+        </ErrorBoundary>
       </div>
     </div>
   );

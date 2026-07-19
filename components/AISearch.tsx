@@ -103,7 +103,7 @@ export default function AISearch() {
 
         {/* Loading hint */}
         {loading && (
-          <p className="text-center text-sm text-gray-400 mt-3">
+          <p className="text-center text-sm text-gray-400 mt-3 animate-pulse">
             Finding your path…
           </p>
         )}

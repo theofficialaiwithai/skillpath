@@ -150,7 +150,7 @@ export default async function DashboardPage() {
         </FadeIn>
 
         {/* Stats row */}
-        <StaggerList className="grid grid-cols-3 gap-4 mb-12" itemDelay={0.07} y={12}>
+        <StaggerList className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12" itemDelay={0.07} y={12}>
           {[
             { label: "Paths started",   value: totalPathsStarted },
             { label: "Steps completed", value: totalStepsCompleted },

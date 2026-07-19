@@ -10,6 +10,7 @@ import {
 import UpgradeModal from "@/components/UpgradeModal";
 import YouTubePlayer from "@/components/YouTubePlayer";
 import { getYouTubeId } from "@/lib/youtube";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -174,13 +175,15 @@ function StepCard({
 
       {/* YouTube player — shown for video resources */}
       {getYouTubeId(step.url) && (
-        <YouTubePlayer
-          url={step.url}
-          stepId={step.stepId}
-          pathId={pathId}
-          isSubscribed={isSubscribed}
-          autoCompleteEnabled={autoCompleteEnabled}
-        />
+        <ErrorBoundary>
+          <YouTubePlayer
+            url={step.url}
+            stepId={step.stepId}
+            pathId={pathId}
+            isSubscribed={isSubscribed}
+            autoCompleteEnabled={autoCompleteEnabled}
+          />
+        </ErrorBoundary>
       )}
 
       {/* Rating prompt */}
