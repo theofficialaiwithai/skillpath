@@ -193,7 +193,7 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
 
       {/* ── EVENTS ──────────────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-6">
-        <EventsSection skillSlug={pathRow.skillSlug} skillName={pathRow.skillName} />
+        <EventsSection skillSlug={pathRow.skillSlug} />
       </div>
     </div>
   );
