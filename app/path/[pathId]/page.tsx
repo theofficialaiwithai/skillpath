@@ -104,16 +104,26 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
     firstIncompleteStepId = steps.find((s) => !completedSet.has(s.stepId))?.stepId ?? null;
   }
 
-  // 4. Paywall check
-  let isPaywalled = false;
+  // 4. Paywall check + subscription flags
+  let isPaywalled        = false;
+  let isSubscribed       = false;
+  let autoCompleteEnabled = false;
   if (userId) {
     const [profile] = await db
-      .select({ subscribed: userProfiles.subscribed, freeUntil: userProfiles.freeUntil })
+      .select({
+        subscribed:          userProfiles.subscribed,
+        freeUntil:           userProfiles.freeUntil,
+        autoCompleteEnabled: userProfiles.autoCompleteEnabled,
+      })
       .from(userProfiles)
       .where(eq(userProfiles.clerkUserId, userId));
 
-    if (profile && !profile.subscribed && profile.freeUntil && profile.freeUntil < new Date()) {
-      isPaywalled = true;
+    if (profile) {
+      isSubscribed        = profile.subscribed ?? false;
+      autoCompleteEnabled = profile.autoCompleteEnabled ?? false;
+      if (!profile.subscribed && profile.freeUntil && profile.freeUntil < new Date()) {
+        isPaywalled = true;
+      }
     }
   }
 
@@ -187,6 +197,8 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
             initialCompletedStepIds={completedStepIds}
             timelineSegments={timelineSegments}
             isPaywalled={isPaywalled}
+            isSubscribed={isSubscribed}
+            autoCompleteEnabled={autoCompleteEnabled}
           />
         </div>
       </div>

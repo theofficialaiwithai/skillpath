@@ -8,6 +8,8 @@ import {
   Share2, Loader2, Clock, CheckCircle2, ExternalLink, Star,
 } from "lucide-react";
 import UpgradeModal from "@/components/UpgradeModal";
+import YouTubePlayer from "@/components/YouTubePlayer";
+import { getYouTubeId } from "@/lib/youtube";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -51,6 +53,8 @@ interface Props {
   initialCompletedStepIds: string[];
   timelineSegments: TimelineSegment[];
   isPaywalled: boolean;
+  isSubscribed: boolean;
+  autoCompleteEnabled: boolean;
 }
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -74,7 +78,7 @@ const PLATFORM_CONFIG: Record<string, { bg: string; text: string }> = {
 
 function StepCard({
   step, idx, isCompleted, isLoading, ratingEntry,
-  userId, userPathId,
+  userId, userPathId, pathId, isSubscribed, autoCompleteEnabled,
   onMarkComplete, onSetRating, onSetNote, onSubmitRating, onDismissRating,
 }: {
   step: StepRow;
@@ -84,6 +88,9 @@ function StepCard({
   ratingEntry: RatingEntry | undefined;
   userId: string | null;
   userPathId: string | null;
+  pathId: string;
+  isSubscribed: boolean;
+  autoCompleteEnabled: boolean;
   onMarkComplete: (id: string) => void;
   onSetRating: (id: string, r: number) => void;
   onSetNote: (id: string, n: string) => void;
@@ -136,14 +143,17 @@ function StepCard({
 
           {/* Actions */}
           <div className="flex-shrink-0 flex flex-col items-end gap-2">
-            <a
-              href={step.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 border-2 border-zinc-200 hover:border-brand hover:text-brand text-zinc-600 font-semibold text-sm rounded-xl px-4 py-2 transition-colors whitespace-nowrap"
-            >
-              Open resource <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            {/* Hide "Open resource" for YouTube — the player handles its own CTA */}
+            {!getYouTubeId(step.url) && (
+              <a
+                href={step.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 border-2 border-zinc-200 hover:border-brand hover:text-brand text-zinc-600 font-semibold text-sm rounded-xl px-4 py-2 transition-colors whitespace-nowrap"
+              >
+                Open resource <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
 
             {isCompleted ? (
               <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-medium rounded-lg px-4 py-2">
@@ -161,6 +171,17 @@ function StepCard({
           </div>
         </div>
       </div>
+
+      {/* YouTube player — shown for video resources */}
+      {getYouTubeId(step.url) && (
+        <YouTubePlayer
+          url={step.url}
+          stepId={step.stepId}
+          pathId={pathId}
+          isSubscribed={isSubscribed}
+          autoCompleteEnabled={autoCompleteEnabled}
+        />
+      )}
 
       {/* Rating prompt */}
       {ratingEntry?.showing && (
@@ -214,6 +235,7 @@ function StepCard({
 export default function PathActions({
   pathId, pathTitle, userId, isStarted, firstIncompleteStepId,
   userPathId, steps, initialCompletedStepIds, timelineSegments, isPaywalled,
+  isSubscribed, autoCompleteEnabled,
 }: Props) {
   const router = useRouter();
 
@@ -389,6 +411,7 @@ export default function PathActions({
               isLoading={loadingStep === step.stepId}
               ratingEntry={ratingMap.get(step.stepId)}
               userId={userId} userPathId={userPathId}
+              pathId={pathId} isSubscribed={isSubscribed} autoCompleteEnabled={autoCompleteEnabled}
               onMarkComplete={handleMarkComplete}
               onSetRating={setRating} onSetNote={setNote}
               onSubmitRating={handleSubmitRating} onDismissRating={dismissRating}
@@ -413,6 +436,7 @@ export default function PathActions({
                   isLoading={loadingStep === step.stepId}
                   ratingEntry={ratingMap.get(step.stepId)}
                   userId={userId} userPathId={userPathId}
+                  pathId={pathId} isSubscribed={isSubscribed} autoCompleteEnabled={autoCompleteEnabled}
                   onMarkComplete={handleMarkComplete}
                   onSetRating={setRating} onSetNote={setNote}
                   onSubmitRating={handleSubmitRating} onDismissRating={dismissRating}
