@@ -15,6 +15,7 @@ import StaggerList from "@/components/motion/StaggerList";
 import GuestPathClaim from "@/components/GuestPathClaim";
 import PathLimitIndicator from "@/components/PathLimitIndicator";
 import StartPathButton from "@/components/StartPathButton";
+import AISearch from "@/components/AISearch";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -161,6 +162,16 @@ export default async function DashboardPage() {
             </div>
           ))}
         </StaggerList>
+
+        {/* AI Search */}
+        <FadeIn y={8} delay={0.15}>
+          <div className="bg-white rounded-3xl border border-[#F0EBE3] shadow-sm p-6 mb-10">
+            <h2 className="font-fraunces font-bold text-lg text-[#1A1A1A] mb-4">
+              Find your next path
+            </h2>
+            <AISearch />
+          </div>
+        </FadeIn>
 
         {/* Active paths */}
         <FadeIn y={8} delay={0.2}>

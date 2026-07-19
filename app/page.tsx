@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { skills as skillsTable } from "@/db/schema";
 import HomepageSkillGrid from "@/components/HomepageSkillGrid";
+import AISearch from "@/components/AISearch";
 
 export const metadata: Metadata = {
   title: "Find Your Path",
@@ -76,6 +77,19 @@ export default async function Home() {
               className="rounded-3xl object-cover w-full h-[500px] shadow-xl"
             />
           </div>
+        </div>
+      </section>
+
+      {/* ── AI SEARCH ────────────────────────────────────────────────────────── */}
+      <section className="bg-[#FFFDF7] px-6 py-12">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+            Or describe what you want to learn
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Tell us your goal and Claude will find the best path for you
+          </p>
+          <AISearch />
         </div>
       </section>
 
