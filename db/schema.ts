@@ -161,15 +161,17 @@ export const guestSessions = pgTable("guest_sessions", {
     .default(sql`now() + interval '7 days'`),
 });
 
-// Event cache — stores scraped community events for 24 hours
+// Event cache — stores fetched community events for 24 hours
 export const cachedEvents = pgTable("cached_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   skillKeyword: text("skill_keyword").notNull(),
-  source: text("source").notNull(), // 'luma' | 'eventbrite' | 'meetup' | 'partiful'
+  source: text("source").notNull(), // 'eventbrite'
+  eventId: text("event_id"),                              // external provider ID
   eventTitle: text("event_title").notNull(),
   eventUrl: text("event_url").notNull(),
   eventDate: timestamp("event_date", { withTimezone: true }),
   eventLocation: text("event_location"),
+  isVirtual: boolean("is_virtual").default(false),
   coverImageUrl: text("cover_image_url"),
   organizerName: text("organizer_name"),
   cachedAt: timestamp("cached_at", { withTimezone: true }).defaultNow(),

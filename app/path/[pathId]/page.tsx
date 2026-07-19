@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { learningPaths, skills, pathSteps, resources, userPaths, userProgress, userProfiles } from "@/db/schema";
 import PathActions from "./PathActions";
 import type { TimelineSegment } from "./PathActions";
+import EventsSection from "@/components/EventsSection";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
       level:       learningPaths.level,
       skillName:   skills.name,
       skillIcon:   skills.icon,
+      skillSlug:   skills.slug,
     })
     .from(learningPaths)
     .innerJoin(skills, eq(learningPaths.skillId, skills.id))
@@ -139,7 +141,7 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
   const levelConf = LEVEL_CONFIG[pathRow.level] ?? LEVEL_CONFIG.beginner;
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-bg-warm">
+    <div className="min-h-[calc(100vh-65px)] bg-[#FFFDF7]">
       {/* ── HEADER ──────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 py-10">
@@ -187,6 +189,11 @@ export default async function PathPage({ params }: { params: Promise<{ pathId: s
             isPaywalled={isPaywalled}
           />
         </div>
+      </div>
+
+      {/* ── EVENTS ──────────────────────────────────────────────────── */}
+      <div className="max-w-4xl mx-auto px-6">
+        <EventsSection skillSlug={pathRow.skillSlug} skillName={pathRow.skillName} />
       </div>
     </div>
   );
