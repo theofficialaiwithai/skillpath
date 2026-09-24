@@ -104,12 +104,12 @@ export default function UpgradeModal({ isOpen, onClose }: Props) {
               <div>
                 <p className="font-heading font-bold text-zinc-900 text-lg">Yearly</p>
                 <p className="text-3xl font-heading font-extrabold text-zinc-900 mt-1">
-                  $29<span className="text-base font-medium text-zinc-400">/yr</span>
+                  $79<span className="text-base font-medium text-zinc-400">/yr</span>
                 </p>
               </div>
               <div className="space-y-1 text-sm text-zinc-500 flex-1">
-                <p>Billed annually</p>
-                <p className="font-semibold text-purple-700">Save 73%</p>
+                <p>Billed annually ($6.58/mo)</p>
+                <p className="font-semibold text-purple-700">Save 27%</p>
               </div>
               <button
                 onClick={() => handleCheckout("yearly")}
