@@ -187,8 +187,7 @@ export default function OnboardingWizard({ skills }: Props) {
 
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
 
-      // Always go to dashboard so the user sees their full path list
-      router.push("/dashboard");
+      router.push(data.pathId ? `/path/${data.pathId}` : "/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
